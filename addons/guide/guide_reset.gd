@@ -1,7 +1,6 @@
 extends Node
 
-
-var _inputs_to_reset:Array[GUIDEInput] = []
+var _inputs_to_reset: Array[GUIDEInput] = []
 
 func _enter_tree() -> void:
 	# this should run at the end of the frame, so we put in a low priority (= high number)
@@ -9,7 +8,7 @@ func _enter_tree() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	for input:GUIDEInput in _inputs_to_reset:
+	for input: GUIDEInput in _inputs_to_reset:
 		input._reset()
 		
 	GUIDE._input_state._reset()

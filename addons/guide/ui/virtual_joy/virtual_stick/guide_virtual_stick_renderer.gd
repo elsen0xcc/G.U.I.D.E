@@ -6,7 +6,7 @@ extends Control
 
 
 var _stick: GUIDEVirtualStick
-var _was_actuated:bool = false
+var _was_actuated: bool = false
 
 ## Returns the stick radius from virtual stick.
 var stick_radius: float:
@@ -37,7 +37,7 @@ var stick_position: Vector2:
 		return Vector2.ZERO
 
 ## Returns the starting position of the virtual stick in global coordinates.
-var stick_start_position:Vector2:
+var stick_start_position: Vector2:
 	get:
 		if _stick != null:
 			return _stick._start_pos
@@ -46,14 +46,14 @@ var stick_start_position:Vector2:
 			
 		
 ## Returns whether or not the stick is currently actuated.
-var is_stick_actuated:bool:
+var is_stick_actuated: bool:
 	get:
 		if _stick != null:
 			return _stick._is_actuated
-		return false		
+		return false
 		
 
-func _notification(what:int) -> void:
+func _notification(what: int) -> void:
 	if what == NOTIFICATION_ENTER_TREE:
 		_stick = get_parent() as GUIDEVirtualStick
 		if _stick == null:
@@ -97,9 +97,8 @@ func _on_stick_changed() -> void:
 ## @param joy_position The position relative to the position of this renderer.
 ## @param joy_offset The normalized joy offset from the center of the stick, 
 ## taking into account the max actuation radius.
-func _update(joy_position: Vector2, joy_offset:Vector2, is_actuated:bool) -> void:
+func _update(joy_position: Vector2, joy_offset: Vector2, is_actuated: bool) -> void:
 	pass
-
 
 
 func _get_configuration_warnings() -> PackedStringArray:
@@ -109,4 +108,3 @@ func _get_configuration_warnings() -> PackedStringArray:
 		results.append("Stick renderer must be a child of GUIDEVirtualStick")
 
 	return results
-

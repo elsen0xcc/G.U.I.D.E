@@ -5,12 +5,12 @@ extends GUIDEInput
 
 ## The action that this input should mirror. This is live tracked, so any change in
 ## the action will update the input.
-@export var action:GUIDEAction:
+@export var action: GUIDEAction:
 	set(value):
 		if value == action:
 			return
 		action = value
-		emit_changed()	
+		emit_changed()
 
 func _begin_usage() -> void:
 	if is_instance_valid(action):
@@ -37,10 +37,10 @@ func _on() -> void:
 	_value = action.value_axis_3d
 	
 func _off() -> void:
-	_value = Vector3.ZERO	
+	_value = Vector3.ZERO
 	
 	
-func is_same_as(other:GUIDEInput) -> bool:
+func is_same_as(other: GUIDEInput) -> bool:
 	return other is GUIDEInputAction and other.action == action
 
 

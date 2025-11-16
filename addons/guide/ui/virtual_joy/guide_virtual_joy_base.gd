@@ -40,11 +40,11 @@ enum InputMode {
 var _is_actuated: bool = false
 
 ## The virtual joy id assigned to this stick.
-var _virtual_joy_id : int = 0
+var _virtual_joy_id: int = 0
 
 ## Connects this virtual device to the input system. If already connected,
 ## it will first disconnect.
-func _reconnect() -> void:	
+func _reconnect() -> void:
 	if not is_node_ready():
 		return
 		
@@ -78,4 +78,4 @@ func _handle_touch_input(event: InputEvent) -> void:
 
 ## Converts screen coordinates to world coordinates.
 func _screen_to_world(input: Vector2) -> Vector2:
-	return get_canvas_transform().affine_inverse() * input	
+	return get_canvas_transform().affine_inverse() * input

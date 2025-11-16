@@ -12,7 +12,7 @@ signal disabled()
 const GUIDESet = preload("guide_set.gd")
 
 ## The display name for this mapping context during action remapping 
-@export var display_name:String:
+@export var display_name: String:
 	set(value):
 		if value == display_name:
 			return
@@ -21,7 +21,7 @@ const GUIDESet = preload("guide_set.gd")
 
 ## The mappings. Do yourself a favour and use the G.U.I.D.E panel
 ## to edit these.
-@export var mappings:Array[GUIDEActionMapping] = []:
+@export var mappings: Array[GUIDEActionMapping] = []:
 	set(value):
 		if value == mappings:
 			return

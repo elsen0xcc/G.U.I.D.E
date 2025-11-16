@@ -3,7 +3,7 @@
 extends Node
 
 ## Instruments a sub-window so it forwards input events to GUIDE.
-static func _instrument(viewport:Viewport):
+static func _instrument(viewport: Viewport):
 	if viewport.has_meta("x-guide-instrumented"):
 		return
 	
@@ -13,14 +13,12 @@ static func _instrument(viewport:Viewport):
 	viewport.gui_focus_changed.connect(tracker._control_focused)
 	
 ## Catches unhandled input and forwards it to GUIDE
-func _unhandled_input(event:InputEvent):
+func _unhandled_input(event: InputEvent):
 	GUIDE.inject_input(event)
 
 ## Some ... creative code ... to catch events from popup windows
 ## that are spawned by Godot's control nodes.
-func _control_focused(control:Control):
+func _control_focused(control: Control):
 	if control is OptionButton or control is ColorPickerButton \
 			or control is MenuButton or control is TabContainer:
-		_instrument(control.get_popup())	
-	
-	
+		_instrument(control.get_popup())

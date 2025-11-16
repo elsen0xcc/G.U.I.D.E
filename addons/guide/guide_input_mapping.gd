@@ -7,7 +7,7 @@ extends Resource
 ## Whether the remapping configuration in this input mapping
 ## should override the configuration of the bound action. Enable
 ## this, to give a key a custom name or category for remapping.
-@export var override_action_settings:bool = false:
+@export var override_action_settings: bool = false:
 	set(value):
 		if override_action_settings == value:
 			return
@@ -17,7 +17,7 @@ extends Resource
 ## If true, players can remap this input mapping. Note that the 
 ## action to which this input is bound also needs to be remappable
 ## for this setting to have an effect.
-@export var is_remappable:bool = false:
+@export var is_remappable: bool = false:
 	set(value):
 		if is_remappable == value:
 			return
@@ -26,7 +26,7 @@ extends Resource
 		
 ## The display name of the input mapping shown to the player. If empty,
 ## the display name of the action is used.
-@export var display_name:String = "":
+@export var display_name: String = "":
 	set(value):
 		if display_name == value:
 			return
@@ -35,7 +35,7 @@ extends Resource
 
 ## The display category of the input mapping. If empty, the display name of the
 ## action is used.
-@export var display_category:String = "":
+@export var display_category: String = "":
 	set(value):
 		if display_category == value:
 			return
@@ -45,7 +45,7 @@ extends Resource
 
 @export_group("Mappings")
 ## The input to be actuated
-@export var input:GUIDEInput:
+@export var input: GUIDEInput:
 	set(value):
 		if value == input:
 			return
@@ -55,7 +55,7 @@ extends Resource
 
 ## A list of modifiers that preprocess the actuated input before
 ## it is fed to the triggers.
-@export var modifiers:Array[GUIDEModifier] = []:
+@export var modifiers: Array[GUIDEModifier] = []:
 	set(value):
 		if value == modifiers:
 			return
@@ -64,7 +64,7 @@ extends Resource
 
 
 ## A list of triggers that could trigger the mapped action.
-@export var triggers:Array[GUIDETrigger] = []:
+@export var triggers: Array[GUIDETrigger] = []:
 	set(value):
 		if value == triggers:
 			return
@@ -74,21 +74,21 @@ extends Resource
 ## Hint for how long the input must remain actuated (in seconds) before the mapping triggers.
 ## If the mapping has no hold trigger it will be -1. If it has multiple hold triggers
 ## the shortest hold time will be used.
-var _trigger_hold_threshold:float = -1.0
+var _trigger_hold_threshold: float = -1.0
 
-var _state:GUIDETrigger.GUIDETriggerState = GUIDETrigger.GUIDETriggerState.NONE
-var _value:Vector3 = Vector3.ZERO
+var _state: GUIDETrigger.GUIDETriggerState = GUIDETrigger.GUIDETriggerState.NONE
+var _value: Vector3 = Vector3.ZERO
 
-var _trigger_list:Array[GUIDETrigger] = []
-var _implicit_count:int = 0
-var _explicit_count:int = 0
+var _trigger_list: Array[GUIDETrigger] = []
+var _implicit_count: int = 0
+var _explicit_count: int = 0
 
 ## Called when the mapping is started to be used by GUIDE. Calculates 
 ## the number of implicit and explicit triggers so we don't need to do this
 ## per frame. Also creates a default trigger when none is set.
 ## finally initializes the _last_value of all triggers to the current
 ## state of the input.
-func _initialize(value_type:GUIDEAction.GUIDEActionValueType) -> void :
+func _initialize(value_type: GUIDEAction.GUIDEActionValueType) -> void:
 	_trigger_list.clear()
 	
 	_implicit_count = 0
@@ -104,11 +104,11 @@ func _initialize(value_type:GUIDEAction.GUIDEActionValueType) -> void :
 		return
 		
 	# Collect the current input value
-	var input_value:Vector3 = input._value if input != null else Vector3.ZERO
+	var input_value: Vector3 = input._value if input != null else Vector3.ZERO
 	
 	# Run it through all modifiers
-	for modifier:GUIDEModifier in modifiers:
-		input_value = modifier._modify_input(input_value, 0, value_type)		
+	for modifier: GUIDEModifier in modifiers:
+		input_value = modifier._modify_input(input_value, 0, value_type)
 	
 	for trigger in triggers:
 		match trigger._get_trigger_type():
@@ -132,24 +132,24 @@ func _initialize(value_type:GUIDEAction.GUIDEActionValueType) -> void :
 		trigger._last_value = input_value
 		
 
-func _update_state(delta:float, value_type:GUIDEAction.GUIDEActionValueType) -> void:
+func _update_state(delta: float, value_type: GUIDEAction.GUIDEActionValueType) -> void:
 	# Collect the current input value
-	var input_value:Vector3 = input._value if input != null else Vector3.ZERO
+	var input_value: Vector3 = input._value if input != null else Vector3.ZERO
 	
 	# Run it through all modifiers
-	for modifier:GUIDEModifier in modifiers:
+	for modifier: GUIDEModifier in modifiers:
 		input_value = modifier._modify_input(input_value, delta, value_type)
 		
 	_value = input_value
 	
-	var triggered_implicits:int = 0
-	var triggered_explicits:int = 0
-	var triggered_blocked:int = 0
+	var triggered_implicits: int = 0
+	var triggered_explicits: int = 0
+	var triggered_blocked: int = 0
 	
 	# Run over all triggers
-	var result:int = GUIDETrigger.GUIDETriggerState.NONE
-	for trigger:GUIDETrigger in _trigger_list:
-		var trigger_result:GUIDETrigger.GUIDETriggerState = trigger._update_state(_value, delta, value_type)
+	var result: int = GUIDETrigger.GUIDETriggerState.NONE
+	for trigger: GUIDETrigger in _trigger_list:
+		var trigger_result: GUIDETrigger.GUIDETriggerState = trigger._update_state(_value, delta, value_type)
 		trigger._last_value = _value
 		
 		var trigger_type := trigger._get_trigger_type()
@@ -164,7 +164,7 @@ func _update_state(delta:float, value_type:GUIDEAction.GUIDEActionValueType) -> 
 			
 		# we only care about the nuances of explicit triggers. implicits and blocking
 		# can only really return yes or no, so they have no nuance		
-		if trigger_type == GUIDETrigger.GUIDETriggerType.EXPLICIT: 
+		if trigger_type == GUIDETrigger.GUIDETriggerType.EXPLICIT:
 			# Higher value results take precedence over lower value results
 			result = max(result, trigger_result)
 	
@@ -186,5 +186,3 @@ func _update_state(delta:float, value_type:GUIDEAction.GUIDEActionValueType) -> 
 		
 	# return the best result
 	_state = result
-
-	

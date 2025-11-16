@@ -3,43 +3,43 @@
 class_name GUIDEInputFormatter
 
 const IconMaker = preload("icon_maker/icon_maker.gd")
-const KeyRenderer:PackedScene = preload("renderers/keyboard/key_renderer.tscn")
-const MouseRenderer:PackedScene = preload("renderers/mouse/mouse_renderer.tscn")
-const TouchRenderer:PackedScene = preload("renderers/touch/touch_renderer.tscn")
-const JoyRenderer:PackedScene = preload("renderers/joy/joy_renderer.tscn")
-const XboxRenderer:PackedScene = preload("renderers/controllers/xbox/xbox_controller_renderer.tscn")
-const PlayStationRenderer:PackedScene = preload("renderers/controllers/playstation/playstation_controller_renderer.tscn")
-const SwitchRenderer:PackedScene = preload("renderers/controllers/switch/switch_controller_renderer.tscn")
-const ActionRenderer:PackedScene = preload("renderers/misc/action_renderer.tscn")
-const FallbackRenderer:PackedScene = preload("renderers/misc/fallback_renderer.tscn")
+const KeyRenderer: PackedScene = preload("renderers/keyboard/key_renderer.tscn")
+const MouseRenderer: PackedScene = preload("renderers/mouse/mouse_renderer.tscn")
+const TouchRenderer: PackedScene = preload("renderers/touch/touch_renderer.tscn")
+const JoyRenderer: PackedScene = preload("renderers/joy/joy_renderer.tscn")
+const XboxRenderer: PackedScene = preload("renderers/controllers/xbox/xbox_controller_renderer.tscn")
+const PlayStationRenderer: PackedScene = preload("renderers/controllers/playstation/playstation_controller_renderer.tscn")
+const SwitchRenderer: PackedScene = preload("renderers/controllers/switch/switch_controller_renderer.tscn")
+const ActionRenderer: PackedScene = preload("renderers/misc/action_renderer.tscn")
+const FallbackRenderer: PackedScene = preload("renderers/misc/fallback_renderer.tscn")
 const DefaultTextProvider = preload("text_providers/default_text_provider.gd")
 const XboxTextProvider = preload("text_providers/controllers/xbox/xbox_controller_text_provider.gd")
 const PlayStationTextProvider = preload("text_providers/controllers/playstation/playstation_controller_text_provider.gd")
 const SwitchTextProvider = preload("text_providers/controllers/switch/switch_controller_text_provider.gd")
 
 # These are shared across all instances
-static var _icon_maker:IconMaker
-static var _icon_renderers:Array[GUIDEIconRenderer] = []
-static var _text_providers:Array[GUIDETextProvider] = []
-static var _is_ready:bool = false
+static var _icon_maker: IconMaker
+static var _icon_renderers: Array[GUIDEIconRenderer] = []
+static var _text_providers: Array[GUIDETextProvider] = []
+static var _is_ready: bool = false
 
 ## Separator to separate mixed input. 
-static var mixed_input_separator:String = ", "
+static var mixed_input_separator: String = ", "
 ## Separator to separate chorded input.
-static var chorded_input_separator:String = " + "
+static var chorded_input_separator: String = " + "
 ## Separator to separate combo input.
-static var combo_input_separator:String = " > "
+static var combo_input_separator: String = " > "
 
 # These are per-instance
-var _action_resolver:Callable
-var _icon_size:int
+var _action_resolver: Callable
+var _icon_size: int
 
 static func _ensure_readiness() -> void:
 	if _is_ready:
 		return
 		
 	# reconnect to an icon maker that might be there
-	var root = Engine.get_main_loop().root	
+	var root = Engine.get_main_loop().root
 	for child in root.get_children():
 		if child is IconMaker:
 			_icon_maker = child
@@ -85,34 +85,34 @@ static func cleanup():
 		_icon_maker.queue_free()
 
 
-func _init(icon_size:int = 32, resolver:Callable = func(action) -> GUIDEActionMapping: return null ):
+func _init(icon_size: int = 32, resolver: Callable = func(action) -> GUIDEActionMapping: return null):
 	_icon_size = icon_size
 	_action_resolver = resolver
 
 
 ## Adds an icon renderer for rendering icons.
-static func add_icon_renderer(renderer:GUIDEIconRenderer) -> void:
+static func add_icon_renderer(renderer: GUIDEIconRenderer) -> void:
 	_icon_renderers.append(renderer)
 	_icon_renderers.sort_custom(func(r1, r2): return r1.priority < r2.priority)
 	
 ## Removes an icon renderer.
-static func remove_icon_renderer(renderer:GUIDEIconRenderer) -> void:
+static func remove_icon_renderer(renderer: GUIDEIconRenderer) -> void:
 	_icon_renderers.erase(renderer)
 	
 ## Adds a text provider for rendering text.
-static func add_text_provider(provider:GUIDETextProvider) -> void:
+static func add_text_provider(provider: GUIDETextProvider) -> void:
 	_text_providers.append(provider)
 	_text_providers.sort_custom(func(r1, r2): return r1.priority < r2.priority)
 
 	
 ## Removes a text provider	
-static func remove_text_provider(provider:GUIDETextProvider) -> void:
+static func remove_text_provider(provider: GUIDETextProvider) -> void:
 	_text_providers.erase(provider)
 
 
 ## Returns an input formatter that can format actions using the currently active inputs.
-static func for_active_contexts(icon_size:int = 32) -> GUIDEInputFormatter:
-	var resolver := func(action:GUIDEAction) -> GUIDEActionMapping:
+static func for_active_contexts(icon_size: int = 32) -> GUIDEInputFormatter:
+	var resolver := func(action: GUIDEAction) -> GUIDEActionMapping:
 		for mapping in GUIDE._active_action_mappings:
 			if mapping.action == action:
 				return mapping
@@ -121,11 +121,11 @@ static func for_active_contexts(icon_size:int = 32) -> GUIDEInputFormatter:
 
 
 ## Returns an input formatter that can format actions using the given context.
-static func for_context(context:GUIDEMappingContext, icon_size:int = 32) -> GUIDEInputFormatter:
-	var resolver:Callable = func(action:GUIDEAction) -> GUIDEActionMapping:
+static func for_context(context: GUIDEMappingContext, icon_size: int = 32) -> GUIDEInputFormatter:
+	var resolver: Callable = func(action: GUIDEAction) -> GUIDEActionMapping:
 		for mapping in context.mappings:
 			if mapping.action == action:
-				return  mapping
+				return mapping
 		return null
 		
 	return GUIDEInputFormatter.new(icon_size, resolver)
@@ -134,33 +134,33 @@ static func for_context(context:GUIDEMappingContext, icon_size:int = 32) -> GUID
 ## Formats the action input as richtext with icons suitable for a RichTextLabel. This function
 ## is async as icons may need to be rendered in the background which can take a few frames, so 
 ## you will need to await on it.
-func action_as_richtext_async(action:GUIDEAction) -> String:
+func action_as_richtext_async(action: GUIDEAction) -> String:
 	return await _materialized_as_richtext_async(_materialize_action_input(action))
 
 
 ## Formats the action input as plain text which can be used in any UI component. This is a bit
 ## more light-weight than formatting as icons and returns immediately.
-func action_as_text(action:GUIDEAction) -> String:
+func action_as_text(action: GUIDEAction) -> String:
 	return _materialized_as_text(_materialize_action_input(action))
 
 ## Formats the input as richtext with icons suitable for a RichTextLabel. This function
 ## is async as icons may need to be rendered in the background which can take a few frames, so 
 ## you will need to await on it.
-func input_as_richtext_async(input:GUIDEInput, materialize_actions:bool = true) -> String:
+func input_as_richtext_async(input: GUIDEInput, materialize_actions: bool = true) -> String:
 	return await _materialized_as_richtext_async(_materialize_input(input, materialize_actions))
 
 
 ## Formats the input as plain text which can be used in any UI component. This is a bit
 ## more light-weight than formatting as icons and returns immediately.
-func input_as_text(input:GUIDEInput, materialize_actions:bool = true) -> String:
-	return _materialized_as_text(_materialize_input(input, materialize_actions))	
+func input_as_text(input: GUIDEInput, materialize_actions: bool = true) -> String:
+	return _materialized_as_text(_materialize_input(input, materialize_actions))
 	
 
 ## Renders materialized input as text.
-func _materialized_as_text(input:MaterializedInput) -> String:
+func _materialized_as_text(input: MaterializedInput) -> String:
 	_ensure_readiness()
 	if input is MaterializedSimpleInput:
-		var text:String = ""
+		var text: String = ""
 		for provider in _text_providers:
 			if provider.supports(input.input):
 				text = provider.get_text(input.input)
@@ -175,17 +175,17 @@ func _materialized_as_text(input:MaterializedInput) -> String:
 	if separator == "" or input.parts.is_empty():
 		return ""
 		
-	var parts:Array[String] = []
+	var parts: Array[String] = []
 	for part in input.parts:
-		parts.append(_materialized_as_text(part))	
+		parts.append(_materialized_as_text(part))
 		
 	return separator.join(parts)
 			
 ## Renders materialized input as rich text.
-func _materialized_as_richtext_async(input:MaterializedInput) -> String:
-	_ensure_readiness()	
+func _materialized_as_richtext_async(input: MaterializedInput) -> String:
+	_ensure_readiness()
 	if input is MaterializedSimpleInput:
-		var icon:Texture2D = null
+		var icon: Texture2D = null
 		for renderer in _icon_renderers:
 			if renderer.supports(input.input):
 				icon = await _icon_maker.make_icon(input.input, renderer, _icon_size)
@@ -202,14 +202,14 @@ func _materialized_as_richtext_async(input:MaterializedInput) -> String:
 	if separator == "" or input.parts.is_empty():
 		return ""
 		
-	var parts:Array[String] = []
+	var parts: Array[String] = []
 	for part in input.parts:
-		parts.append(await _materialized_as_richtext_async(part))	
+		parts.append(await _materialized_as_richtext_async(part))
 		
 	return separator.join(parts)
 		
 
-func _separator_for_input(input:MaterializedInput) -> String:
+func _separator_for_input(input: MaterializedInput) -> String:
 	if input is MaterializedMixedInput:
 		return mixed_input_separator
 	elif input is MaterializedComboInput:
@@ -222,14 +222,14 @@ func _separator_for_input(input:MaterializedInput) -> String:
 			
 
 ## Materializes action input.	
-func _materialize_action_input(action:GUIDEAction) -> MaterializedInput:
+func _materialize_action_input(action: GUIDEAction) -> MaterializedInput:
 	var result := MaterializedMixedInput.new()
 	if action == null:
 		push_warning("Trying to get inputs for a null action.")
 		return result
 	
 	# get the mapping for this action
-	var mapping:GUIDEActionMapping = _action_resolver.call(action)
+	var mapping: GUIDEActionMapping = _action_resolver.call(action)
 	
 	# if we have no mapping, well that's it, return an empty mixed input
 	if mapping == null:
@@ -237,14 +237,14 @@ func _materialize_action_input(action:GUIDEAction) -> MaterializedInput:
 		
 	# collect input mappings
 	for input_mapping in mapping.input_mappings:
-		var chorded_actions:Array[MaterializedInput] = []
-		var combos:Array[MaterializedInput] = []
+		var chorded_actions: Array[MaterializedInput] = []
+		var combos: Array[MaterializedInput] = []
 		
 		for trigger in input_mapping.triggers:
 			# if we have a combo trigger, materialize its input.
 			if trigger is GUIDETriggerCombo:
 				var combo := MaterializedComboInput.new()
-				for step:GUIDETriggerComboStep in trigger.steps:
+				for step: GUIDETriggerComboStep in trigger.steps:
 					combo.parts.append(_materialize_action_input(step.action))
 				combos.append(combo)
 
@@ -261,18 +261,18 @@ func _materialize_action_input(action:GUIDEAction) -> MaterializedInput:
 				chord.parts.append(combo)
 			if combos.is_empty():
 				if input_mapping.input != null:
-					chord.parts.append(_materialize_input(input_mapping.input))					
+					chord.parts.append(_materialize_input(input_mapping.input))
 			result.parts.append(chord)
 		else:
 			for combo in combos:
 				result.parts.append(combo)
 			if combos.is_empty():
 				if input_mapping.input != null:
-					result.parts.append(_materialize_input(input_mapping.input))			
+					result.parts.append(_materialize_input(input_mapping.input))
 	return result
 	
 ## Materializes direct input.
-func _materialize_input(input:GUIDEInput, materialize_actions:bool = true) -> MaterializedInput:
+func _materialize_input(input: GUIDEInput, materialize_actions: bool = true) -> MaterializedInput:
 	if input == null:
 		push_warning("Trying to materialize a null input.")
 		return MaterializedMixedInput.new()
@@ -308,7 +308,7 @@ func _materialize_input(input:GUIDEInput, materialize_actions:bool = true) -> Ma
 		if chord.parts.is_empty():
 			return MaterializedSimpleInput.new(input)
 			
-		chord.parts.append(MaterializedSimpleInput.new(input))	
+		chord.parts.append(MaterializedSimpleInput.new(input))
 		return chord
 
 	# everything else is just a simple input
@@ -319,40 +319,40 @@ class MaterializedInput:
 	
 class MaterializedSimpleInput:
 	extends MaterializedInput
-	var input:GUIDEInput	
+	var input: GUIDEInput
 	
-	func _init(input:GUIDEInput):
+	func _init(input: GUIDEInput):
 		self.input = input
 	
 class MaterializedMixedInput:
 	extends MaterializedInput
-	var parts:Array[MaterializedInput] = []
+	var parts: Array[MaterializedInput] = []
 	
 class MaterializedChordedInput:
 	extends MaterializedInput
-	var parts:Array[MaterializedInput] = []
+	var parts: Array[MaterializedInput] = []
 	
 class MaterializedComboInput:
 	extends MaterializedInput
-	var parts:Array[MaterializedInput] = []
+	var parts: Array[MaterializedInput] = []
 
 
 ## Returns the name of the associated joystick/pad of the given input.
 ## If the input is no joy input or the device name cannot be determined
 ## returns an empty string. 
-static func _joy_name_for_input(input:GUIDEInput) -> String:
+static func _joy_name_for_input(input: GUIDEInput) -> String:
 	if not input is GUIDEInputJoyBase:
 		return ""
 	
-	var joypads:Array[int] = Input.get_connected_joypads()
-	var joy_index:int = input.joy_index
+	var joypads: Array[int] = Input.get_connected_joypads()
+	var joy_index: int = input.joy_index
 	if joy_index < 0:
 		# pick the first one
 		joy_index = 0
 	
 	# We don't have such a controller, so bail out.
 	if joypads.size() <= joy_index:
-		return "" 
+		return ""
 		
 	var id := joypads[joy_index]
-	return Input.get_joy_name(id)	
+	return Input.get_joy_name(id)
